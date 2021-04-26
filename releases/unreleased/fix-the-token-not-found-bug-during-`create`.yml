@@ -1,0 +1,13 @@
+---
+title: Fix the token not found bug during `create`
+category: fixed
+author: Venu Vardhan Reddy Tekula <venu@bitergia.com>
+issue: null
+notes: >
+    The token is required if you are creating the dev
+    setup but not required for updating. So, it was
+    marked not required. But, the create operation
+    terminates abruptly is the token is missing.
+
+    This code covers the exception and shows info about
+    adding the token.

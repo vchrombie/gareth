@@ -109,6 +109,11 @@ def main(token, source, operation):
     Tool to manage the developer installation of GrimoireLab.
     """
 
+    if operation == 'create' and not token:
+        msg = "Token is required for creating the dev setup.\n"
+        msg += "Please provide the token using the '-t'/'--token' flag."
+        raise click.ClickException(msg)
+
     if operation == 'create':
         create_dev_setup(token, source)
     elif operation == 'update':
