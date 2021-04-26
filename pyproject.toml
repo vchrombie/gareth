@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "gareth"
-version = "0.0.0"
+version = "0.1.0"
 description = "Tool to automate the developer setup of GrimoireLab"
 authors = [
     "Venu Vardhan Reddy Tekula <venu@bitergia.com>"
