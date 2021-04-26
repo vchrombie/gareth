@@ -28,6 +28,9 @@ Tool to manage the developer installation of GrimoireLab.
 import os
 
 import click
+import git.repo.base as grb
+
+from github import Github, BadCredentialsException, GithubException
 
 REPOS = [
     "chaoss/grimoirelab-sirmordred",
@@ -47,6 +50,8 @@ REPOS = [
     "chaoss/grimoirelab-kingarthur",
     "chaoss/grimoirelab-manuscripts"
 ]
+
+GITHUB_URL = "https://github.com/"
 
 
 def source_prompt():
@@ -103,6 +108,98 @@ def main(token, source, operation):
         create_dev_setup(token, source)
     elif operation == 'update':
         update_dev_setup(source)
+
+
+def validate_token(token):
+    """Check and validate the GitHub API Token."""
+
+    g = Github(token)
+    try:
+        user = g.get_user()
+        click.echo("Access token is working, {}.\n".format(user.login))
+        return g
+    except BadCredentialsException as ex:
+        msg = "Invalid token.\n"
+        msg += str(ex)
+        raise click.ClickException(msg)
+    except Exception as ex:
+        raise click.ClickException(ex)
+
+
+def change_the_directory(dirpath):
+    """Change the directory"""
+
+    try:
+        os.chdir(dirpath)
+    except Exception as ex:
+        raise click.ClickException(ex)
+
+
+def fork_the_repository(user, repo):
+    """Fork the respository"""
+
+    try:
+        user.create_fork(repo)
+    except GithubException as ex:
+        msg = "Forking aborted.\n"
+        msg += "Please select the appropriate scope (`repo`) for the token.\n"
+        msg += str(ex)
+        raise click.ClickException(msg)
+
+
+def clone_the_repository(user, repo):
+    """Clone the forked repository"""
+
+    try:
+        return grb.Repo.clone_from(
+            GITHUB_URL + user.login + "/" + repo.name + ".git",
+            "{0}/{1}".format(os.getcwd(), repo.name)
+        )
+    except grb.GitCommandError as ex:
+        raise click.ClickException(ex)
+
+
+def set_upstream(local_repo_path, org, repo):
+    """Set upstream to the forked repository"""
+
+    try:
+        grb.Repo.create_remote(
+            local_repo_path, "upstream",
+            GITHUB_URL + org.login + "/" + repo.name + ".git"
+        )
+    except grb.GitCommandError as ex:
+        msg = str(ex)
+        click.ClickException(msg)
+
+
+def create_dev_setup(token, source):
+    """Create the developer setup"""
+
+    g = validate_token(token)
+
+    click.echo("Creating the developer setup.\n")
+
+    user = g.get_user()
+
+    source_path = os.path.join(os.getcwd(), source)
+
+    for repository in REPOS:
+        click.echo("{}...".format(repository), nl=False)
+
+        change_the_directory(source_path)
+
+        org, repo = repository.split('/')
+        org = g.get_organization(org)
+        repo = org.get_repo(repo)
+
+        fork_the_repository(user, repo)
+        local_repo_path = clone_the_repository(user, repo)
+        set_upstream(local_repo_path, org, repo)
+
+        click.echo("done")
+
+    click.echo()
+    click.echo("The dev setup is created.")
 
 
 if __name__ == '__main__':

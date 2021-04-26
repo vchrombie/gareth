@@ -1,0 +1,19 @@
+---
+title: Add support for creating the dev environment
+category: added
+author: Venu Vardhan Reddy Tekula <venu@bitergia.com>
+issue: null
+notes: >
+    The support for creating the developer environment
+    is added. This feature would automate most of the 
+    process of the setup.
+    
+    It forks all the grimoirelab repositories using the
+    token and clones them to the local machine into a 
+    given source. Later, it sets the upstream to all the
+    repositories accordingly.
+
+    Usage:
+    ```
+    $ gareth -t xxxx -s sources --create
+    ```
