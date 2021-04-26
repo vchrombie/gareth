@@ -26,6 +26,7 @@ Tool to manage the developer installation of GrimoireLab.
 """
 
 import os
+import subprocess
 
 import click
 import git.repo.base as grb
@@ -52,6 +53,10 @@ REPOS = [
 ]
 
 GITHUB_URL = "https://github.com/"
+
+CHECKOUT_MASTER_CMD = ['git', 'checkout', 'master']
+FETCH_UPSTREAM_CMD = ['git', 'fetch', 'upstream']
+REBASE_UPSTREAM_CMD = ['git', 'rebase', 'upstream/master']
 
 
 def source_prompt():
@@ -172,6 +177,14 @@ def set_upstream(local_repo_path, org, repo):
         click.ClickException(msg)
 
 
+def sync_with_upstream():
+    """Rebase the fork with upstream"""
+
+    subprocess.call(CHECKOUT_MASTER_CMD)
+    subprocess.call(FETCH_UPSTREAM_CMD)
+    subprocess.call(REBASE_UPSTREAM_CMD)
+
+
 def create_dev_setup(token, source):
     """Create the developer setup"""
 
@@ -200,6 +213,29 @@ def create_dev_setup(token, source):
 
     click.echo()
     click.echo("The dev setup is created.")
+
+
+def update_dev_setup(source):
+    """Update the developer setup"""
+
+    click.echo("Updating the developer setup.\n")
+
+    source_path = os.path.join(os.getcwd(), source)
+
+    for repository in REPOS:
+        click.echo("{}...".format(repository))
+
+        org, repo = repository.split('/')
+        dirpath = os.path.join(source_path, repo)
+
+        change_the_directory(dirpath)
+
+        sync_with_upstream()
+
+        click.echo("done\n")
+
+    click.echo()
+    click.echo("The dev setup is updated.")
 
 
 if __name__ == '__main__':
