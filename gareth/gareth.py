@@ -61,14 +61,12 @@ REBASE_UPSTREAM_CMD = ['git', 'rebase', 'upstream/master']
 
 def source_prompt():
     """Prompt source to read the folder name"""
-
     prompt_msg = ">> Please provide the source folder name"
     return prompt_msg
 
 
 def validate_source(ctx, param, value):
     """Check source option"""
-
     click.echo()
 
     if os.path.exists(value):
@@ -108,7 +106,6 @@ def main(token, source, operation):
     """
     Tool to manage the developer installation of GrimoireLab.
     """
-
     if operation == 'create' and not token:
         msg = "Token is required for creating the dev setup.\n"
         msg += "Please provide the token using the '-t'/'--token' flag."
@@ -122,7 +119,6 @@ def main(token, source, operation):
 
 def validate_token(token):
     """Check and validate the GitHub API Token."""
-
     g = Github(token)
     try:
         user = g.get_user()
@@ -138,7 +134,6 @@ def validate_token(token):
 
 def change_the_directory(dirpath):
     """Change the directory"""
-
     try:
         os.chdir(dirpath)
     except Exception as ex:
@@ -147,7 +142,6 @@ def change_the_directory(dirpath):
 
 def fork_the_repository(user, repo):
     """Fork the respository"""
-
     try:
         user.create_fork(repo)
     except GithubException as ex:
@@ -159,7 +153,6 @@ def fork_the_repository(user, repo):
 
 def clone_the_repository(user, repo):
     """Clone the forked repository"""
-
     try:
         return grb.Repo.clone_from(
             GITHUB_URL + user.login + "/" + repo.name + ".git",
@@ -171,7 +164,6 @@ def clone_the_repository(user, repo):
 
 def set_upstream(local_repo_path, org, repo):
     """Set upstream to the forked repository"""
-
     try:
         grb.Repo.create_remote(
             local_repo_path, "upstream",
@@ -184,7 +176,6 @@ def set_upstream(local_repo_path, org, repo):
 
 def sync_with_upstream():
     """Rebase the fork with upstream"""
-
     subprocess.call(CHECKOUT_MASTER_CMD)
     subprocess.call(FETCH_UPSTREAM_CMD)
     subprocess.call(REBASE_UPSTREAM_CMD)
@@ -192,7 +183,6 @@ def sync_with_upstream():
 
 def create_dev_setup(token, source):
     """Create the developer setup"""
-
     g = validate_token(token)
 
     click.echo("Creating the developer setup.\n")
@@ -222,7 +212,6 @@ def create_dev_setup(token, source):
 
 def update_dev_setup(source):
     """Update the developer setup"""
-
     click.echo("Updating the developer setup.\n")
 
     source_path = os.path.join(os.getcwd(), source)
