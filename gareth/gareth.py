@@ -21,9 +21,7 @@
 #
 
 
-"""
-Tool to manage the developer installation of GrimoireLab.
-"""
+"""Tool to manage the developer installation of GrimoireLab."""
 
 import os
 import subprocess
@@ -65,7 +63,7 @@ def source_prompt():
     return prompt_msg
 
 
-def validate_source(ctx, param, value):
+def validate_source(ctx, value):
     """Check source option"""
     click.echo()
 
@@ -103,9 +101,7 @@ def validate_source(ctx, param, value):
 @click.option('--update', 'operation', flag_value='update',
               help="Update the developer setup.")
 def main(token, source, operation):
-    """
-    Tool to manage the developer installation of GrimoireLab.
-    """
+    """Tool to manage the developer installation of GrimoireLab."""
     if operation == 'create' and not token:
         msg = "Token is required for creating the dev setup.\n"
         msg += "Please provide the token using the '-t'/'--token' flag."
@@ -219,7 +215,7 @@ def update_dev_setup(source):
     for repository in REPOS:
         click.echo("{}...".format(repository))
 
-        org, repo = repository.split('/')
+        repo = repository.split('/')[-1]
         dirpath = os.path.join(source_path, repo)
 
         change_the_directory(dirpath)
