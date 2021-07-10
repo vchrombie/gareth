@@ -188,7 +188,7 @@ def create_dev_setup(token, source):
     source_path = os.path.join(os.getcwd(), source)
 
     for repository in REPOS:
-        click.echo("{}...".format(repository), nl=False)
+        click.echo("{} ...".format(repository), nl=False)
 
         change_the_directory(source_path)
 
